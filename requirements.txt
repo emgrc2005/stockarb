@@ -1,0 +1,9 @@
+yfinance==0.2.54
+pandas==2.2.3
+numpy==1.26.4
+statsmodels==0.14.4
+scipy==1.13.1
+alpaca-py==0.33.1
+tenacity==9.0.0
+python-dotenv==1.0.1
+pytz==2024.2

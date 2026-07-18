@@ -1,0 +1,9 @@
+.env
+data/*.db
+data/*.db-shm
+data/*.db-wal
+!data/.gitkeep
+__pycache__/
+*.pyc
+.venv/
+venv/

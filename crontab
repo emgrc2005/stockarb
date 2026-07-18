@@ -1,0 +1,21 @@
+# StockArb job schedule, run by supercronic (PID 1).
+# All times are America/New_York local time — CRON_TZ handles DST
+# automatically via the container's tzdata package.
+#
+# Format: CRON_TZ=<tz> MIN HOUR DOM MON DOW COMMAND
+# supercronic streams each job's stdout/stderr directly to the container's
+# stdout, so `docker logs -f` shows everything with no extra log files.
+
+# 1) Data pipeline — 18:00 ET, Mon-Fri (well after the 16:00 ET market close,
+#    gives Yahoo Finance time to finalize the day's adjusted close).
+CRON_TZ=America/New_York 0 18 * * 1-5 python -m app.run_data_pipeline
+
+# 2) Analytics engine (cointegration screen + rolling z-scores) — 18:30 ET,
+#    Mon-Fri. 30-minute buffer after the data pipeline is comfortably enough
+#    for a ~100-pair Engle-Granger screen.
+CRON_TZ=America/New_York 30 18 * * 1-5 python -m app.run_analytics
+
+# 3) Execution engine — every 15 minutes, 09:00-16:00 ET, Mon-Fri. Runs
+#    outside 09:30-16:00 regular hours are cheap no-ops (the engine checks
+#    Alpaca's market clock and exits immediately if closed).
+CRON_TZ=America/New_York */15 9-16 * * 1-5 python -m app.run_execution
